@@ -1,0 +1,6 @@
+framework module Pods_imageio {
+  umbrella header "Pods-imageio-umbrella.h"
+
+  export *
+  module * { export * }
+}

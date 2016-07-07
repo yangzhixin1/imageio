@@ -7,7 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef NS_ENUM(NSInteger, NSPUIImageType)
+
+{ NSPUIImageType_JPEG,
+    
+    NSPUIImageType_PNG,
+    
+    NSPUIImageType_Unknown,
+    NSPUIImageType_GIF,
+    NSPUIImageType_JPG,
+     NSPUIImageType_TIFF,
+     NSPUIImageType_WEBP,
+    
+};
 
 @interface UIImage (List)
-
++ (UIImage *)backImage:(NSData *)data;
++ (UIImage *)YZ_animatedGIFWithData:(NSData *)data;
++ (NSPUIImageType)contentTypeForImageData:(NSData *)data;//通过data 判断 图片格式
++ (UIImage *)judgeImageTypeHandle:(NSData *)data;
 @end

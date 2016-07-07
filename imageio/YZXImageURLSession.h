@@ -8,6 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-@interface YZXImageURLSession : NSObject
+@protocol YZXImageSessionDelegate <NSObject>
 
+- (void)sendImageData:(NSData *)data URL:(NSString *)url;
+
+@end
+@interface YZXImageURLSession : NSObject<NSURLSessionDelegate>
+
+@property (nonatomic, strong) NSMutableData *recieveData;
+
+@property (nonatomic, assign) id<YZXImageSessionDelegate> delegate;
+
+- (void)initWithURL:(NSString *)imageURL;
 @end

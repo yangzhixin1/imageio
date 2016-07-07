@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YZURLCache.h"
+#define WS(weakSelf)  __weak __typeof(&*self)weakSelf = self;
 
-@interface YZXImageView : UIImageView
 
+@interface YZXImageView : UIImageView <YZURLCacheDelegate>
+@property(nonatomic, copy) NSString *imageUrl;
+- (void)YZXCacheImaheFromURL:(NSString *)url ;
 @end

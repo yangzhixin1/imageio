@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YZXImageView.h"
 
 @interface ImageCellTableViewCell : UITableViewCell
+
+@property (weak, nonatomic) IBOutlet YZXImageView *testImage;
 
 @end

@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YZURLCache.h"
 
-@interface UIImageView (CacheImage)
+@interface UIImageView (CacheImage)<YZURLCacheDelegate>
 
+//- (void)YZXCacheImaheFromURL:(NSString *)url;
 @end

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface YZXImageModel : NSObject
+@interface YZXImageModel : NSObject<NSCoding>
 
+@property (nonatomic, strong) NSData *ImageDate;
+@property (nonatomic, strong) NSString *StoreTime;
 @end

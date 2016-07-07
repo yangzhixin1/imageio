@@ -12,6 +12,7 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    _testImage.layer.borderWidth = 1;
     // Initialization code
 }
 

@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "4C01111A24F3F8328884FA84C85BB48E78A8A462",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "4A5DA40ADA8AF0FA3B7B05EE3ACE24C45F92B1EC" : 0,
+    "4C01111A24F3F8328884FA84C85BB48E78A8A462" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E42BBCC8-6900-41F1-92FC-79893AE13E57",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "4A5DA40ADA8AF0FA3B7B05EE3ACE24C45F92B1EC" : "..",
+    "4C01111A24F3F8328884FA84C85BB48E78A8A462" : "imageio\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "imageio",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "imageio.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/yangzhixin1\/URLsession.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4A5DA40ADA8AF0FA3B7B05EE3ACE24C45F92B1EC"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/yangzhixin1\/imageio.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4C01111A24F3F8328884FA84C85BB48E78A8A462"
+    }
+  ]
+}
