@@ -98,8 +98,12 @@
     if (!cell) {
         cell = [[[NSBundle mainBundle] loadNibNamed:@"ImageCellTableViewCell" owner:self options:nil] firstObject];
     }
-    [cell.testImage sd_setImageWithURL:[NSURL URLWithString:_imageArr[indexPath.row%9]]];
+    [cell.testImage YZXCacheImaheFromURL:_imageArr[indexPath.row%9]];
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 100;
 }
 - (void)initWithURL:(id)imageURL
 {

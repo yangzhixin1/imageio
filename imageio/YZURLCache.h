@@ -21,7 +21,7 @@ typedef void (^BackImageBlock)(UIImage *image);
 
 + (instancetype)shareCache;
 - (void)setDate:(NSData *)data key:(NSString *)url;
-- (UIImage *)isCachHad:(NSString *)url success:(BackImageBlock)success;
+- (void)isCachHad:(NSString *)url success:(BackImageBlock)success;
 - (UIImage *)getCacheData:(NSString *)url;
 - (void)greateDiskStoreDate:(NSData *)data key:(NSString *)url;
 - (UIImage *)getDiskStoreDate:(NSString *)url;

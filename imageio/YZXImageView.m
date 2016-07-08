@@ -13,14 +13,20 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageLoaderDidLoad:) name:@"CHANGEUI" object:nil];
     WS(WS);
     self.imageUrl = url;
-    //if ([[YZURLCache shareCache] isCachHad:url]) {
-        
-         UIImage *image = [[YZURLCache shareCache] isCachHad:url success:^(UIImage *image) {
+    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+       [[YZURLCache shareCache] isCachHad:url success:^(UIImage *image) {
             
-             WS.image = image;
+            //dispatch_async(dispatch_get_main_queue(), ^{
+                            WS.image = image;
+                            [self setNeedsLayout];
+                     //   });
+            
         }];
+    //});
+    
+    
         
-    //}
+    
 //    __block UIImage *fromImage = [UIImage new];
 //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 //        [YZURLCache shareCache].delagete = self;

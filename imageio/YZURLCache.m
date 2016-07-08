@@ -79,10 +79,10 @@
   }
 }
 #pragma mark *******判断内存是否缓存图片
-- (UIImage *)isCachHad:(NSString *)url success:(BackImageBlock)success {
+- (void)isCachHad:(NSString *)url success:(BackImageBlock)success {
    
     __block UIImage *fromImage = [UIImage new];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if ([self isTempCache:url]) {
             NSLog(@"Cache存在");
             
@@ -103,13 +103,13 @@
         }
         
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-        
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//        
             success(fromImage);
-        });
-    });
+//        });
+//    });
 
-    return nil;
+    
      //判断层内存是否已有图片缓存
   }
 
