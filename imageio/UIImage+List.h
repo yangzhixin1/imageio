@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "YZURLCache.h"
 typedef NS_ENUM(NSInteger, NSPUIImageType)
 
 { NSPUIImageType_JPEG,
@@ -25,5 +26,5 @@ typedef NS_ENUM(NSInteger, NSPUIImageType)
 + (UIImage *)backImage:(NSData *)data;
 + (UIImage *)YZ_animatedGIFWithData:(NSData *)data;
 + (NSPUIImageType)contentTypeForImageData:(NSData *)data;//通过data 判断 图片格式
-+ (UIImage *)judgeImageTypeHandle:(NSData *)data;
++ (UIImage *)judgeImageTypeHandle:(NSData *)data  success:(BackImageBlock) back;
 @end

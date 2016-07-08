@@ -7,6 +7,7 @@
 //
 
 #import "UIImage+List.h"
+#import "YZURLCache.h"
 #import <ImageIO/ImageIO.h>
 
 static inline NSPUIImageType NSPUIImageTypeFromData(NSData *imageData) {
@@ -25,23 +26,23 @@ static inline NSPUIImageType NSPUIImageTypeFromData(NSData *imageData) {
 
 @implementation UIImage (List)
 + (UIImage *)backImage:(NSData *)data {
-    @autoreleasepool {
-  UIImage *backImage = [UIImage new];
-  CGImageSourceRef _incrementallyImgSource =
-      CGImageSourceCreateIncremental(NULL);
-  NSPUIImageType type = NSPUIImageTypeFromData(data);
-  CGImageSourceUpdateData(_incrementallyImgSource,
-                          (CFDataRef)CFBridgingRetain(data), YES);
-  CGImageRef imageRef =
-      CGImageSourceCreateImageAtIndex(_incrementallyImgSource, 0, NULL);
+  @autoreleasepool {
+    UIImage *backImage = [UIImage new];
+    CGImageSourceRef _incrementallyImgSource =
+        CGImageSourceCreateIncremental(NULL);
+    NSPUIImageType type = NSPUIImageTypeFromData(data);
+    CGImageSourceUpdateData(_incrementallyImgSource,
+                            (CFDataRef)CFBridgingRetain(data), YES);
+    CGImageRef imageRef =
+        CGImageSourceCreateImageAtIndex(_incrementallyImgSource, 0, NULL);
 
-  backImage = [UIImage imageWithCGImage:imageRef];
-  CGImageRelease(imageRef);
-       
-  [self imageChangeJPGFromOtherImage:backImage typeImage:type];
-        CFRelease(_incrementallyImgSource);
-  return backImage;
-    }
+    backImage = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+
+    [self imageChangeJPGFromOtherImage:backImage typeImage:type];
+    CFRelease(_incrementallyImgSource);
+    return backImage;
+  }
 }
 + (NSData *)imageChangeJPGFromOtherImage:(UIImage *)image
                                typeImage:(NSPUIImageType)type {
@@ -87,51 +88,76 @@ static inline NSPUIImageType NSPUIImageTypeFromData(NSData *imageData) {
   UIGraphicsEndImageContext();
   return reSizeImage;
 }
-+ (UIImage *)YZ_animatedGIFWithData:(NSData *)data {
-  if (!data) {
-    return nil;
-  }
++ (void)YZ_animatedGIFWithData:(NSData *)data success:(BackImageBlock)back {
+  
+        if (!data) {
+          back(nil);
+        }
+      dispatch_queue_t serialQueue = dispatch_queue_create("Down_TabBar_Pic", DISPATCH_QUEUE_SERIAL);
+    dispatch_async(
+                   serialQueue, ^{
+        CGImageSourceRef source =
+            CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
 
-  CGImageSourceRef source =
-      CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
+        size_t count = CGImageSourceGetCount(source);
 
-  size_t count = CGImageSourceGetCount(source);
+        UIImage *animatedImage;
 
-  UIImage *animatedImage;
+        if (count <= 1) {
+           
+            
+            CGImageSourceRef _incrementallyImgSource =
+            CGImageSourceCreateIncremental(NULL);
+            
+            CGImageSourceUpdateData(_incrementallyImgSource,
+                                    (CFDataRef)CFBridgingRetain(data), YES);
+            CGImageRef imageRef =
+            CGImageSourceCreateImageAtIndex(_incrementallyImgSource, 0, NULL);
+            
+            animatedImage = [UIImage imageWithCGImage:imageRef];
+            CGImageRelease(imageRef);
+            
+            
+            CFRelease(_incrementallyImgSource);
+            
 
-  if (count <= 1) {
-    animatedImage = [[UIImage alloc] initWithData:data];
-  } else {
-    NSMutableArray *images = [NSMutableArray array];
+        } else {
+          NSMutableArray *images = [NSMutableArray array];
 
-    NSTimeInterval duration = 0.0f;
+          NSTimeInterval duration = 0.0f;
 
-    for (size_t i = 0; i < count; i++) {
-      CGImageRef image = CGImageSourceCreateImageAtIndex(source, i, NULL);
-      if (!image) {
-        continue;
-      }
+          for (size_t i = 0; i < count; i++) {
+            CGImageRef image = CGImageSourceCreateImageAtIndex(source, i, NULL);
+            if (!image) {
+              continue;
+            }
 
-      duration += [self frameDurationAtIndex:i source:source];
+            duration += [self frameDurationAtIndex:i source:source];
 
-      [images addObject:[UIImage imageWithCGImage:image
-                                            scale:[UIScreen mainScreen].scale
-                                      orientation:UIImageOrientationUp]];
+            [images
+                addObject:[UIImage imageWithCGImage:image
+                                              scale:[UIScreen mainScreen].scale
+                                        orientation:UIImageOrientationUp]];
 
-      CGImageRelease(image);
-    }
+            CGImageRelease(image);
+          }
 
-    if (!duration) {
-      duration = (1.0f / 10.0f) * count;
-    }
+          if (!duration) {
+            duration = (1.0f / 10.0f) * count;
+          }
 
-    animatedImage = [UIImage animatedImageWithImages:images duration:duration];
-  }
+          animatedImage =
+              [UIImage animatedImageWithImages:images duration:duration];
+        }
 
-  CFRelease(source);
-  animatedImage =
-      [animatedImage imageWithRenderingMode:UIImageRenderingModeAutomatic];
-  return animatedImage;
+        CFRelease(source);
+        animatedImage = [animatedImage
+            imageWithRenderingMode:UIImageRenderingModeAutomatic];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          back(animatedImage);
+        });
+
+      });
 }
 
 + (float)frameDurationAtIndex:(NSUInteger)index
@@ -198,7 +224,7 @@ static inline NSPUIImageType NSPUIImageTypeFromData(NSData *imageData) {
 
   return newImage;
 }
-+ (NSPUIImageType )contentTypeForImageData:(NSData *)data {
++ (NSPUIImageType)contentTypeForImageData:(NSData *)data {
   uint8_t c;
   [data getBytes:&c length:1];
   switch (c) {
@@ -229,21 +255,30 @@ static inline NSPUIImageType NSPUIImageTypeFromData(NSData *imageData) {
   return NSPUIImageType_Unknown;
 }
 
-+ (UIImage *)judgeImageTypeHandle:(NSData *)data {
-    
-    NSPUIImageType type = [self contentTypeForImageData:data];
-    switch (type) {
-        case NSPUIImageType_GIF:
-            
-            return [self YZ_animatedGIFWithData:data];
-            break;
-        case NSPUIImageType_JPG:
-             return [self backImage:data];
-            break;
-            
-        default:
-            return nil;
-            break;
-    }
++ (UIImage *)judgeImageTypeHandle:(NSData *)data success:(BackImageBlock)back {
+
+  NSPUIImageType type = [self contentTypeForImageData:data];
+  if (type == NSPUIImageType_GIF) {
+    [self YZ_animatedGIFWithData:data
+                         success:^(UIImage *image) {
+                           back(image);
+                         }];
+    return nil;
+  } else {
+    return nil;
+  }
+  //        case NSPUIImageType_GIF:
+  //
+  //
+  //
+  //            break;
+  //        case NSPUIImageType_JPG:
+  //             return [self backImage:data];
+  //            break;
+  //
+  //        default:
+  //            return nil;
+  //            break;
+  //    }
 }
 @end

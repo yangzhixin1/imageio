@@ -82,14 +82,25 @@
 - (void)isCachHad:(NSString *)url success:(BackImageBlock)success {
    
     __block UIImage *fromImage = [UIImage new];
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if ([self isTempCache:url]) {
+            if ([self isTempCache:url]) {
             NSLog(@"Cache存在");
-            
-            fromImage = [self getCacheData:url];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+            [self getCacheData:url succsess:^(UIImage *image) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                
+                success(image);
+                        });
+                
+
+            }];
+                    });
+                    
         } else if ([self isDiskHad:url]) {
             NSLog(@"%@", @"硬盘存在");
-            fromImage =  [self getDiskStoreDate:url];
+            fromImage =  [self getDiskStoreDate:url success:^(UIImage *image) {
+                
+            }];
             
         } else {
             /**
@@ -128,13 +139,21 @@
   return NO;
 }
 #pragma mark *******if 存在返回数据
-- (UIImage *)getCacheData:(NSString *)url {
-
-  @autoreleasepool {
-  UIImage *newImage = [UIImage
-      judgeImageTypeHandle:[[_tempCach objectForKey:url] objectForKey:url]];
-  return newImage;
-  }
+- (void)getCacheData:(NSString *)url succsess:(BackImageBlock)back {
+    dispatch_queue_t serialQueue = dispatch_queue_create("Down_TabBar_Pic", DISPATCH_QUEUE_SERIAL);
+    dispatch_async(
+                   serialQueue, ^{
+                       NSData *data = [[_tempCach objectForKey:url] objectForKey:url];
+  
+                       dispatch_async(dispatch_get_main_queue(), ^{
+                           UIImage *newImage = [UIImage
+                                                judgeImageTypeHandle:data  success:^(UIImage *image) {
+                               back(image);
+                           }];
+                       });
+                       
+                   });
+  
 }
 
 #pragma mark ******** 进行沙盒存储
@@ -161,7 +180,7 @@
 
 #pragma mark *********cach文件中取出图片.(返回data)
 
-- (UIImage *)getDiskStoreDate:(NSString *)url {
+- (UIImage *)getDiskStoreDate:(NSString *)url success:(BackImageBlock)back {
 
   NSDictionary *imagesDic =
       [NSDictionary dictionaryWithContentsOfFile:_filename];
@@ -169,9 +188,11 @@
   // YZXImageModel *imageModel = [imagesDic objectForKey:url];
     @autoreleasepool {
   UIImage *newImage = [UIImage
-      judgeImageTypeHandle:[[imagesDic objectForKey:url] objectForKey:url]];
+      judgeImageTypeHandle:[[imagesDic objectForKey:url] objectForKey:url] success:^(UIImage *image) {
+          back(image);
+      }];
     [self setDate:[[imagesDic objectForKey:url] objectForKey:url] key:url];
-  return newImage;
+  return nil;
     }
 }
 #pragma mark ***********session 协议方法
@@ -180,22 +201,24 @@
  // [self setDate:data key:url];
   [self greateDiskStoreDate:data key:url];
 
-  UIImage *NewImage = [UIImage judgeImageTypeHandle:data];
+  UIImage *NewImage = [UIImage judgeImageTypeHandle:data success:^(UIImage *image) {
+      NSNotification *notification = [NSNotification
+                                      notificationWithName:@"CHANGEUI"
+                                      object:self
+                                      userInfo:[NSDictionary
+                                                dictionaryWithObjectsAndKeys:url, @"imageURL",
+                                                image, @"image",
+                                                nil]];
+      
+      [[NSNotificationCenter defaultCenter]
+       performSelectorOnMainThread:@selector(postNotification:)
+       withObject:notification
+       waitUntilDone:YES];
+
+  }];
   
 
-  NSNotification *notification = [NSNotification
-      notificationWithName:@"CHANGEUI"
-                    object:self
-                  userInfo:[NSDictionary
-                               dictionaryWithObjectsAndKeys:url, @"imageURL",
-                                                            NewImage, @"image",
-                                                            nil]];
-
-  [[NSNotificationCenter defaultCenter]
-      performSelectorOnMainThread:@selector(postNotification:)
-                       withObject:notification
-                    waitUntilDone:YES];
-
+ 
   //[self.delagete sendImage:NewImage URL:url];
 }
 

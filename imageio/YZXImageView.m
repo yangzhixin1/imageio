@@ -13,16 +13,16 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageLoaderDidLoad:) name:@"CHANGEUI" object:nil];
     WS(WS);
     self.imageUrl = url;
-    //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
        [[YZURLCache shareCache] isCachHad:url success:^(UIImage *image) {
             
-            //dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
                             WS.image = image;
                             [self setNeedsLayout];
-                     //   });
-            
+                        });
+           
         }];
-    //});
+    });
     
     
         
